@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<block>
+  <name>sp_threshold</name>
+  <key>costas8_sp_threshold</key>
+  <category>costas8</category>
+  <import>import costas8</import>
+  <make>costas8.sp_threshold()</make>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>float</type>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>float</type>
+  </source>
+</block>
