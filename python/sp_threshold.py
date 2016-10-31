@@ -44,7 +44,7 @@ class sp_threshold(gr.sync_block):
         range5 = in0 > math.cos(math.pi/8)
         out[range1] = -1
         out[range2] = -1/(2**0.5)
-        out[range3] = 1
+        out[range3] = 0
         out[range4] = 1/(2**0.5)
         out[range5] = 1
         return len(output_items[0])

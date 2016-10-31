@@ -31,7 +31,8 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    sp_threshold.py DESTINATION ${GR_PYTHON_DIR}/costas8
+    sp_threshold.py
+    costas_loop.py DESTINATION ${GR_PYTHON_DIR}/costas8
 )
 
 ########################################################################
@@ -42,3 +43,4 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-costas8)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_sp_threshold ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_sp_threshold.py)
+GR_ADD_TEST(qa_costas_loop ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_costas_loop.py)

@@ -46,6 +46,7 @@ from costas8_swig import *
 
 # import any pure python here
 from sp_threshold import sp_threshold
+from costas_loop import costas_loop
 #
 
 # ----------------------------------------------------------------
