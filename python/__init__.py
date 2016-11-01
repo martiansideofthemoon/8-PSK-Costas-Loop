@@ -42,10 +42,11 @@ if _RTLD_GLOBAL != 0:
 
 
 # import swig generated symbols into the costas8 namespace
-from costas8_swig import *
+# from costas8_swig import *
 
 # import any pure python here
 from sp_threshold import sp_threshold
+from costas_loop import costas_loop
 #
 
 # ----------------------------------------------------------------

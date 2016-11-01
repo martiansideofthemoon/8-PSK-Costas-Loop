@@ -18,5 +18,6 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    costas8_sp_threshold.xml DESTINATION share/gnuradio/grc/blocks
+    costas8_sp_threshold.xml
+    costas8_costas_loop.xml DESTINATION share/gnuradio/grc/blocks
 )
