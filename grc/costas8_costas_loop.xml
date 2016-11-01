@@ -4,7 +4,7 @@
   <key>costas8_costas_loop</key>
   <category>costas8</category>
   <import>import costas8</import>
-  <make>costas8.costas_loop($Rate)</make>
+  <make>costas8.costas_loop($samp_rate, $iter)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
