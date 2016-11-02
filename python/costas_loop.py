@@ -50,7 +50,6 @@ class costas_loop(gr.sync_block):
     self.costas8_sp_threshold_1 = costas8.sp_threshold()
     self.costas8_sp_threshold_0 = costas8.sp_threshold()
     self.k_factor = -5/samp_rate
-    #self.set_history(2);     # For the filter block
 
   def sp_threshold(self, in0):
     output = 0
@@ -82,31 +81,35 @@ class costas_loop(gr.sync_block):
     out_vco = np.ones(in0.shape, dtype=np.complex64)
     in0 = in0/math.sqrt(2)
     for i in xrange(0,self.iter):
+      # Multiply input signal with feedback of that iteration
       on_first_mul = in0*feedback
+      # Phase error detector
       real = on_first_mul.real
       imag = on_first_mul.imag
       self.costas8_sp_threshold_0.work(np.array([imag]), a)
       self.costas8_sp_threshold_1.work(np.array([real]), b)
       in_iir = np.arcsin(imag*b[0] - real*a[0])
 
+      # IIR filter implementing (1.0001 - z)/(1 - z) (old style)
+      # self.prev_input[i] contains last input value from previous in0 chunk
       in_iir_delay = np.concatenate([[self.prev_input[i]],in_iir[0:-1]])
+      # Update this for next in0 chunk
       self.prev_input[i] = in_iir[-1]
       out_temp = in_iir*1.0001 - in_iir_delay
+      # Workaround for adding y[n-1]
       out_temp[0] += self.prev_output[i]
       out_iir = np.cumsum(out_temp)
       self.prev_output[i] = out_iir[-1]
 
+      # VCO implementation 1/(1 - z) (old style)
       out_iir[0] += self.prev_phase[i]
       in_vco = np.cumsum(out_iir)
       self.prev_phase[i] = in_vco[-1]
-      #if self.prev_phase[i] > 2*math.pi:
-      #  self.prev_phase -= 2*math.pi
-      #if self.prev_phase[i] < 0:
-      #  self.prev_phase += 2*math.pi
       real_part = np.cos(self.k_factor*in_vco)
       imag_part = np.sin(self.k_factor*in_vco)
       out_vco = real_part + 1j*imag_part
       feedback = out_vco
+
     if self.call % 1 == 0:
       s = np.angle([feedback[100]], deg=True)
       s2 = np.angle([in0[100]], deg=True)
