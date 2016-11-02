@@ -37,15 +37,19 @@ class costas_loop(gr.sync_block):
       out_sig=[np.complex64])
     self.samp_rate = samp_rate;
     self.iter = iter;
+    self.call = 0
 
   ##################################################
     # Blocks
   ##################################################
 
-    self.prev_output_iir = 0
+    self.prev_input = np.zeros(self.iter, dtype=np.float64)
+    self.prev_output = np.zeros(self.iter, dtype=np.float64)
+    self.prev_phase = np.zeros(self.iter, dtype=np.float64)
+
     self.costas8_sp_threshold_1 = costas8.sp_threshold()
     self.costas8_sp_threshold_0 = costas8.sp_threshold()
-    self.k_factor = -5.0/samp_rate
+    self.k_factor = -5/samp_rate
     self.set_history(2);     # For the filter block
 
   def sp_threshold(self, in0):
@@ -63,36 +67,51 @@ class costas_loop(gr.sync_block):
     return output
 
   def work(self, input_items, output_items):
+    self.call += 1
     in0 = input_items[0]
     out = output_items[0]
     # <+signal processing here+>
-    feedback = 1
+    feedback = np.ones(in0.shape, dtype=np.complex64)
     on_first_mul = np.ones(in0.shape, dtype=np.complex64)
-    op_thresh_imag = np.ones(in0.shape, dtype=np.complex64)
-    op_thresh_real = np.ones(in0.shape, dtype=np.complex64)
-    in_iir = np.zeros(in0.shape, dtype=np.complex64)
-    out_iir = np.ones(in0.shape, dtype=np.complex64)
+    op_thresh_imag = np.ones(in0.shape, dtype=np.float64)
+    op_thresh_real = np.ones(in0.shape, dtype=np.float64)
+    a = np.array([op_thresh_imag])
+    b = np.array([op_thresh_real])
+    in_iir = np.zeros(in0.shape, dtype=np.float64)
+    out_iir = np.ones(in0.shape, dtype=np.float64)
     out_vco = np.ones(in0.shape, dtype=np.complex64)
-    prev_output_iir = np.zeros(in0.shape, dtype=np.complex64)
-    prev_output_iir[0] = self.prev_output_iir
-    for i in xrange(1,self.iter):
+    in0 = in0/math.sqrt(2)
+    for i in xrange(0,self.iter):
       on_first_mul = in0*feedback
       real = on_first_mul.real
       imag = on_first_mul.imag
-      #op_thresh_imag = self.sp_threshold(imag)
-      #op_thresh_real = self.sp_threshold(real)
-      self.costas8_sp_threshold_0.work(np.array([imag]), np.array([op_thresh_imag]))
-      self.costas8_sp_threshold_1.work(np.array([real]), np.array([op_thresh_real]))
-      in_iir = imag*op_thresh_real - real*op_thresh_imag
-      in_iir2 = np.concatenate([[0],in_iir[0:-1]])
-      out_iir = in_iir*1.001 - in_iir2 + prev_output_iir
-      real_part = np.cos(self.k_factor*out_iir)
-      imag_part = np.sin(self.k_factor*out_iir)
+      self.costas8_sp_threshold_0.work(np.array([imag]), a)
+      self.costas8_sp_threshold_1.work(np.array([real]), b)
+      in_iir = np.arcsin(imag*b[0] - real*a[0])
+
+      in_iir_delay = np.concatenate([[self.prev_input[i]],in_iir[0:-1]])
+      self.prev_input[i] = in_iir[-1]
+      out_temp = in_iir*1.0001 - in_iir_delay
+      out_temp[0] += self.prev_output[i]
+      out_iir = np.cumsum(out_temp)
+      self.prev_output[i] = out_iir[-1]
+
+      out_iir[0] += self.prev_phase[i]
+      in_vco = np.cumsum(out_iir)
+      self.prev_phase[i] = in_vco[-1]
+      #if self.prev_phase[i] > 2*math.pi:
+      #  self.prev_phase -= 2*math.pi
+      #if self.prev_phase[i] < 0:
+      #  self.prev_phase += 2*math.pi
+      real_part = np.cos(self.k_factor*in_vco)
+      imag_part = np.sin(self.k_factor*in_vco)
       out_vco = real_part + 1j*imag_part
       feedback = out_vco
-      prev_output_iir = np.concatenate([[0],out_iir[0:-1]])
-      if i == 1:
-        self.prev_output_iir = out_iir[-1]
+    if self.call % 1 == 0:
+      s = np.angle(feedback, deg=True)
+      print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.std(s))
+      pass
+
     out[:] = (on_first_mul)[1:]
 
     return len(output_items[0])
