@@ -50,7 +50,7 @@ class costas_loop(gr.sync_block):
     self.costas8_sp_threshold_1 = costas8.sp_threshold()
     self.costas8_sp_threshold_0 = costas8.sp_threshold()
     self.k_factor = -5/samp_rate
-    self.set_history(2);     # For the filter block
+    #self.set_history(2);     # For the filter block
 
   def sp_threshold(self, in0):
     output = 0
@@ -108,11 +108,14 @@ class costas_loop(gr.sync_block):
       out_vco = real_part + 1j*imag_part
       feedback = out_vco
     if self.call % 1 == 0:
-      s = np.angle(feedback, deg=True)
-      print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.std(s))
+      s = np.angle([feedback[100]], deg=True)
+      s2 = np.angle([in0[100]], deg=True)
+      #print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.average(s2))
+      #import pdb
+      #pdb.set_trace()
       pass
 
-    out[:] = (on_first_mul)[1:]
+    out[:] = (on_first_mul)#[1:]
 
     return len(output_items[0])
 
