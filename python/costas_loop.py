@@ -20,6 +20,7 @@
 # -
 
 import numpy as np
+import time
 import math
 from gnuradio import gr
 import costas8
@@ -38,6 +39,7 @@ class costas_loop(gr.sync_block):
     self.samp_rate = samp_rate;
     self.iter = iter;
     self.call = 0
+    self.start_time = time.time()
 
   ##################################################
     # Blocks
@@ -110,9 +112,16 @@ class costas_loop(gr.sync_block):
       out_vco = real_part + 1j*imag_part
       feedback = out_vco
 
+    #print self.k_factor*self.prev_phase[-1]
+    #print self.prev_phase[180:]
+    self.prev_phase = np.round(self.prev_phase % (2*np.pi/self.k_factor), 3)
+    #print self.k_factor*self.prev_phase[-1]
+
     if self.call % 1 == 0:
       s = np.angle([feedback[100]], deg=True)
       s2 = np.angle([in0[100]], deg=True)
+      print self.prev_output[-1]
+      #print str(mean) + ", " + str(np.std(self.prev_phase[180:]))
       #print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.average(s2))
       #import pdb
       #pdb.set_trace()
