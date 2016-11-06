@@ -95,14 +95,14 @@ class costas_loop(gr.sync_block):
       self.costas8_sp_threshold_1.work(np.array([real]), b)
       in_iir = np.arcsin(imag*b[0] - real*a[0])
 
-      #inital = signal.lfiltic([1], [1, -0.99], [self.prev_output2[i]])
+      #inital = signal.lfiltic([1], [1, -0.99], [self.prev_output[i]])
       #out_iir, _ = signal.lfilter([1], [1, -0.99], in_iir, zi=inital)
       out_iir = in_iir
 
-      inital = signal.lfiltic([1.0001,-1], [1, -1], [self.prev_output[i]], [self.prev_output2[i]])
+      inital = signal.lfiltic([1.0001,-1], [1, -1], [self.prev_output2[i]], [self.prev_output[i]])
       out_iir2, _ = signal.lfilter([1.0001,-1], [1, -1], out_iir, zi=inital)
-      self.prev_output[i] = out_iir2[-1]
-      self.prev_output2[i] = out_iir[-1]
+      self.prev_output2[i] = out_iir2[-1]
+      self.prev_output[i] = out_iir[-1]
 
       # VCO implementation 1/(1 - z) (old style)
       inital = signal.lfiltic([1], [1, -1], [self.prev_phase[i]])
