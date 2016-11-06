@@ -20,6 +20,7 @@
 # -
 
 import numpy as np
+from scipy import signal
 import time
 import math
 from gnuradio import gr
@@ -47,6 +48,7 @@ class costas_loop(gr.sync_block):
 
     self.prev_input = np.zeros(self.iter, dtype=np.float64)
     self.prev_output = np.zeros(self.iter, dtype=np.float64)
+    self.prev_output2 = np.zeros(self.iter, dtype=np.float64)
     self.prev_phase = np.zeros(self.iter, dtype=np.float64)
 
     self.costas8_sp_threshold_1 = costas8.sp_threshold()
@@ -80,6 +82,7 @@ class costas_loop(gr.sync_block):
     b = np.array([op_thresh_real])
     in_iir = np.zeros(in0.shape, dtype=np.float64)
     out_iir = np.ones(in0.shape, dtype=np.float64)
+    out_iir2 = np.ones(in0.shape, dtype=np.float64)
     out_vco = np.ones(in0.shape, dtype=np.complex64)
     in0 = in0/math.sqrt(2)
     for i in xrange(0,self.iter):
@@ -92,21 +95,20 @@ class costas_loop(gr.sync_block):
       self.costas8_sp_threshold_1.work(np.array([real]), b)
       in_iir = np.arcsin(imag*b[0] - real*a[0])
 
-      # IIR filter implementing (1.0001 - z)/(1 - z) (old style)
-      # self.prev_input[i] contains last input value from previous in0 chunk
-      in_iir_delay = np.concatenate([[self.prev_input[i]],in_iir[0:-1]])
-      # Update this for next in0 chunk
-      self.prev_input[i] = in_iir[-1]
-      out_temp = in_iir*1.0001 - in_iir_delay
-      # Workaround for adding y[n-1]
-      out_temp[0] += self.prev_output[i]
-      out_iir = np.cumsum(out_temp)
-      self.prev_output[i] = out_iir[-1]
+      #inital = signal.lfiltic([1], [1, -0.99], [self.prev_output2[i]])
+      #out_iir, _ = signal.lfilter([1], [1, -0.99], in_iir, zi=inital)
+      out_iir = in_iir
+
+      inital = signal.lfiltic([1.0001,-1], [1, -1], [self.prev_output[i]], [self.prev_output2[i]])
+      out_iir2, _ = signal.lfilter([1.0001,-1], [1, -1], out_iir, zi=inital)
+      self.prev_output[i] = out_iir2[-1]
+      self.prev_output2[i] = out_iir[-1]
 
       # VCO implementation 1/(1 - z) (old style)
-      out_iir[0] += self.prev_phase[i]
-      in_vco = np.cumsum(out_iir)
+      inital = signal.lfiltic([1], [1, -1], [self.prev_phase[i]])
+      in_vco, _ = signal.lfilter([1], [1, -1], out_iir2, zi=inital)
       self.prev_phase[i] = in_vco[-1]
+
       real_part = np.cos(self.k_factor*in_vco)
       imag_part = np.sin(self.k_factor*in_vco)
       out_vco = real_part + 1j*imag_part
@@ -120,7 +122,8 @@ class costas_loop(gr.sync_block):
     if self.call % 1 == 0:
       s = np.angle([feedback[100]], deg=True)
       s2 = np.angle([in0[100]], deg=True)
-      print self.prev_output[-1]
+      #print self.prev_output[-1]
+      print time.time() - self.start_time
       #print str(mean) + ", " + str(np.std(self.prev_phase[180:]))
       #print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.average(s2))
       #import pdb
