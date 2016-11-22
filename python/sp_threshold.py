@@ -49,3 +49,19 @@ class sp_threshold(gr.sync_block):
         out[range5] = 1
         return len(output_items[0])
 
+    def execute(self, in0):
+        output = 0
+        if in0 <= math.cos(7*math.pi/8):
+            output = -1
+        elif in0 > math.cos(7*math.pi/8) and in0 <= math.cos(5*math.pi/8):
+            output = -1/(2**0.5)
+        elif in0 > math.cos(5*math.pi/8) and in0 <= math.cos(3*math.pi/8):
+            output = 0
+        elif in0 > math.cos(3*math.pi/8) and in0 <= math.cos(math.pi/8):
+            output = 1/(2**0.5)
+        elif in0 > math.cos(math.pi/8):
+            output = 1
+        else:
+            output = 0
+        return output
+

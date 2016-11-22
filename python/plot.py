@@ -3,10 +3,9 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import spline
 import numpy as np
 
-data = np.genfromtxt("data_samples_error_iter0.csv",delimiter=",")
-data2 = np.genfromtxt("data_samples_error_iter50.csv",delimiter=",")
-data3 = np.genfromtxt("data_samples_error_iter98.csv",delimiter=",")
-data4 = np.genfromtxt("data_samples_error_iter25.csv",delimiter=",")
+data = np.genfromtxt("data2_iter_vs_error_sample1.csv",delimiter=",")
+data2 = np.genfromtxt("data2_iter_vs_error_sample150.csv",delimiter=",")
+data3 = np.genfromtxt("data2_iter_vs_error_sample300.csv",delimiter=",")
 X = data[:,0]
 Y = data[:,1]
 #Z = data[:,2]
