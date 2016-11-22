@@ -40,13 +40,13 @@ class costas_loop(gr.sync_block):
     self.samp_rate = samp_rate;
     self.iter = iter;
     self.call = 0
+    self.samples = 0
     self.start_time = time.time()
 
   ##################################################
     # Blocks
   ##################################################
 
-    self.prev_input = np.zeros(self.iter, dtype=np.float64)
     self.prev_output = np.zeros(self.iter, dtype=np.float64)
     self.prev_output2 = np.zeros(self.iter, dtype=np.float64)
     self.prev_phase = np.zeros(self.iter, dtype=np.float64)
@@ -73,6 +73,9 @@ class costas_loop(gr.sync_block):
     self.call += 1
     in0 = input_items[0]
     out = output_items[0]
+    self.samples += in0.shape[0]
+    # import pdb
+    # pdb.set_trace()
     # <+signal processing here+>
     feedback = np.ones(in0.shape, dtype=np.complex64)
     on_first_mul = np.ones(in0.shape, dtype=np.complex64)
@@ -114,6 +117,23 @@ class costas_loop(gr.sync_block):
       out_vco = real_part + 1j*imag_part
       feedback = out_vco
 
+      if (i == 1):
+        append = str(self.samples) + ", " + str(in_iir[-1]) + "\n"
+        with open("/home/kalpesh/Academics/EE340_Project/gr-costas8/python/data_samples_error_iter1.csv", "a") as myfile:
+          pass
+          #myfile.write(append)
+      if (i == 0):
+        append2 = str(self.samples) + ", " + str(in_iir[-1]) + "\n"
+        with open("/home/kalpesh/Academics/EE340_Project/gr-costas8/python/data_samples_error_iter0.csv", "a") as myfile:
+          pass
+          #myfile.write(append2)
+      if (i == 98):
+        append3 = str(self.samples) + ", " + str(in_iir[-1]) + "\n"
+        with open("/home/kalpesh/Academics/EE340_Project/gr-costas8/python/data_samples_error_iter98.csv", "a") as myfile:
+          pass
+          #myfile.write(append3)
+
+
     #print self.k_factor*self.prev_phase[-1]
     #print self.prev_phase[180:]
     self.prev_phase = np.round(self.prev_phase % (2*np.pi/self.k_factor), 3)
@@ -122,8 +142,9 @@ class costas_loop(gr.sync_block):
     if self.call % 1 == 0:
       s = np.angle([feedback[100]], deg=True)
       s2 = np.angle([in0[100]], deg=True)
-      #print self.prev_output[-1]
-      print time.time() - self.start_time
+      #print self.samples
+      print str(self.call) + ", " + str(in_iir[-1])
+      #print time.time() - self.start_time
       #print str(mean) + ", " + str(np.std(self.prev_phase[180:]))
       #print str(self.call) + ", " + str(np.average(s)) + ", " + str(np.average(s2))
       #import pdb
