@@ -30,11 +30,13 @@ Since this is going astray from the official OOT Module blocks, feel free to mai
 
 You can test the installation by running the two GRC files (one for each block) in the root directory of the folder. You should get a stable 8 PSK output in the XY Plot that looks like this -
 <center>
+
 ![costas](costas.png)
+
 </center>
 ## Code and Plots
 
-The signal processing blocks can be found in `python/costas_loop.py` and `python/sp_threshold.py`. A few plots of error, feedback and IIR filter output are shown below,
+The signal processing blocks can be found in `python/costas_loop.py` and `python/sp_threshold.py`. A few plots of error, IIR filter output and feedback are shown below,
 <center>
 ![avg_error](avg_error.png)
 
