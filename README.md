@@ -24,7 +24,7 @@ The project builds two GNURadio blocks, an 8-PSK threshold block to carry out ph
   * Open the `__init__.py` file with `root` access. (file is located at  `/usr/local/lib/python2.7/dist-packages/costas8/__init__.py`)
   * Comment the line `from costas8_swig import *` (line 45). Save the file and restart GRC.
 
-Since this is going astray from the official OOT Module blocks, feel free to mail me or leave an issue if you encounter any installation issue.
+Since this is going astray from the official OOT Module documentation, feel free to mail me or leave an issue if you encounter any installation issue.
 
 ## Testing
 
