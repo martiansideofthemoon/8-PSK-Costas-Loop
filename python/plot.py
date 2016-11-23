@@ -3,7 +3,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import spline
 import numpy as np
 
-data = np.genfromtxt("data2_iter_vs_error_sample1.csv",delimiter=",")
+data = np.genfromtxt("final_data4.csv",delimiter=",")
 data2 = np.genfromtxt("data2_iter_vs_error_sample150.csv",delimiter=",")
 data3 = np.genfromtxt("data2_iter_vs_error_sample300.csv",delimiter=",")
 X = data[:,0]
@@ -18,5 +18,5 @@ Y3 = data3[:,1]
 #fig = plt.figure()
 #ax = fig.add_subplot(111, projection='3d')
 #ax.contour(X, Y, Z)
-plt.plot(X,Y,X2,Y2,X3,Y3, linewidth=2.0)
+plt.plot(X,Y, linewidth=2.0)
 plt.show()

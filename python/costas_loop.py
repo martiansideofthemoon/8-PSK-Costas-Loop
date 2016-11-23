@@ -24,8 +24,6 @@ import time
 import math
 from gnuradio import gr
 import costas8
-from gnuradio import blocks
-from gnuradio import filter
 
 class costas_loop(gr.sync_block):
   """
@@ -49,12 +47,16 @@ class costas_loop(gr.sync_block):
     self.prev_out_iir = 0
     self.prev_in_vco = 0
     self.feedback = 0
+    self.error_total = 0
 
   def work(self, input_items, output_items):
     in0 = input_items[0]
     out = output_items[0]
     self.call += 1
     self.samples += in0.shape[0]
+    self.error_total = 0
+    self.in_vco_total = 0
+    self.out_iir_total = 0
     for i in range(0, in0.shape[0]):
       # Output of costas loop
       on_first_mul = in0[i]*self.feedback
@@ -66,15 +68,23 @@ class costas_loop(gr.sync_block):
       b = self.costas8_sp_threshold_1.execute(real)
       # IIR Filter
       in_iir = np.arcsin(imag*b - real*a)
+      self.error_total += in_iir
       out_iir = 1.0001*in_iir - self.prev_in_iir + self.prev_out_iir
       self.prev_in_iir = in_iir
       self.prev_out_iir = out_iir
+      self.out_iir_total += out_iir
       # VCO Block
       in_vco = out_iir + self.prev_in_vco
+      self.in_vco_total += in_vco
       self.prev_in_vco = in_vco
       real_part = np.cos(self.k_factor*in_vco)
       imag_part = np.sin(self.k_factor*in_vco)
       out_vco = real_part + 1j*imag_part
       self.feedback = out_vco
+
+    append2 = str(self.samples) + ", " + str(self.out_iir_total / in0.shape[0]) + "\n"
+    with open("/home/kalpesh/Academics/EE340_Project/gr-costas8/python/final_data4.csv", "a") as myfile:
+      pass
+      #myfile.write(append2)
     print self.samples
     return len(output_items[0])
