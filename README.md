@@ -8,10 +8,10 @@ The project builds two GNURadio blocks, an 8-PSK threshold block to carry out ph
 
 * Make sure you have `libboost-all-dev`, `libcppunit-dev`, `gnuradio-dev`, `cmake`, `numpy` and `gnuradio` installed.
 * Clone the repository, `git clone https://github.com/martiansideofthemoon/8-PSK-Costas-Loop`.
-* `cd 8-PSK-Costas-Loop/build`
+* `cd 8-PSK-Costas-Loop/build`.
 * Once inside the build folder, run `cmake ../`. This should generate a Makefile in your `build` directory.
 * In the same folder, run `make`.
-* In the same folder, run `sudo make install`
+* In the same folder, run `sudo make install`.
 * Run `gnuradio-companion` and open the GRC files in the root of the repository. If the block doesn't show up / doesn't work (this is likely), move to the next section.
 
 ## Troubleshooting
@@ -21,7 +21,7 @@ The project builds two GNURadio blocks, an 8-PSK threshold block to carry out ph
   * `sudo cp /usr/local/share/gnuradio/grc/blocks/costas8_sp_threshold.xml /usr/share/gnuradio/grc/blocks/`
 
 * **Block gives a swig import error** - Since GNURadio assumes a C++ implementation, a slight modification is needed in the `__init__.py` file.
-  * Open the `__init__.py` file with `root` access. (file is located at  `/usr/local/lib/python2.7/dist-packages/costas8/__init__.py`)
+  * Open the `__init__.py` file with `root` access. (file is located at  `/usr/local/lib/python2.7/dist-packages/costas8/__init__.py`).
   * Comment the line `from costas8_swig import *` (line 45). Save the file and restart GRC.
 
 Since this is going astray from the official OOT Module documentation, feel free to mail me or leave an issue if you encounter any installation issue.
