@@ -6,7 +6,7 @@ The project builds two GNURadio blocks, an 8-PSK threshold block to carry out ph
 
 ## Installation Instructions
 
-* Make sure you have `cmake`, `numpy` and `gnuradio` installed.
+* Make sure you have `libboost-all-dev`, `libcppunit-dev`, `gnuradio-dev`, `cmake`, `numpy` and `gnuradio` installed.
 * Clone the repository, `git clone https://github.com/martiansideofthemoon/8-PSK-Costas-Loop`.
 * `cd 8-PSK-Costas-Loop/build`
 * Once inside the build folder, run `cmake ../`. This should generate a Makefile in your `build` directory.
