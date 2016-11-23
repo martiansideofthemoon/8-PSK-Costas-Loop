@@ -82,9 +82,5 @@ class costas_loop(gr.sync_block):
       out_vco = real_part + 1j*imag_part
       self.feedback = out_vco
 
-    append2 = str(self.samples) + ", " + str(self.out_iir_total / in0.shape[0]) + "\n"
-    with open("/home/kalpesh/Academics/EE340_Project/gr-costas8/python/final_data4.csv", "a") as myfile:
-      pass
-      #myfile.write(append2)
     print self.samples
     return len(output_items[0])

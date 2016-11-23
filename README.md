@@ -12,7 +12,7 @@ The project builds two GNURadio blocks, an 8-PSK threshold block to carry out ph
 * Once inside the build folder, run `cmake ../`. This should generate a Makefile in your `build` directory.
 * In the same folder, run `make`.
 * In the same folder, run `sudo make install`
-* Run `gnuradio-companion`. If the block doesn't show up / doesn't work (this is likely), move to the next section.
+* Run `gnuradio-companion` and open the GRC files in the root of the repository. If the block doesn't show up / doesn't work (this is likely), move to the next section.
 
 ## Troubleshooting
 
